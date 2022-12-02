@@ -6,125 +6,107 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.TextView;
+
+import java.util.Arrays;
+
+enum player {
+    X,
+    O
+}
+
+enum gameStates {
+    X,
+    O,
+    Empty
+}
 
 public class MainActivity extends AppCompatActivity {
     boolean gameActive = true;
 
-    // Player representation
-    // 0 - X
-    // 1 - O
-    int activePlayer = 0;
+    player activePlayer = player.X;
 
-    // State meanings:
-    //    0 - X
-    //    1 - O
-    //    2 - Null
-    int[] gameState = {2, 2, 2, 2, 2, 2, 2, 2, 2};
+    gameStates[] gameState = {gameStates.Empty, gameStates.Empty, gameStates.Empty,
+                              gameStates.Empty, gameStates.Empty, gameStates.Empty,
+                              gameStates.Empty, gameStates.Empty, gameStates.Empty};
 
-    // put all win positions in a 2D array
-    int[][] winPositions = {{0, 1, 2}, {3, 4, 5}, {6, 7, 8},
-            {0, 3, 6}, {1, 4, 7}, {2, 5, 8},
-            {0, 4, 8}, {2, 4, 6}};
+    int[][] winPositions = {{0, 1, 2, 6}, {3, 4, 5, 7}, {6, 7, 8, 8},
+            {0, 3, 6, 3}, {1, 4, 7, 4}, {2, 5, 8, 5},
+            {0, 4, 8, 1}, {2, 4, 6, 2}};
     public int counter = 0;
 
-    // this function will be called every time a
-    // players tap in an empty box of the grid
     public void playerTap(View view) {
         ImageView img = (ImageView) view;
         int tappedImage = Integer.parseInt(img.getTag().toString());
 
-        // game reset function will be called
-        // if someone wins or the boxes are full
         if (!gameActive) {
             gameReset(view);
         }
 
-        // if the tapped image is empty
-        if (gameState[tappedImage] == 2) {
-            // increase the counter
-            // after every tap
+        if (gameState[tappedImage] == gameStates.Empty) {
             counter++;
 
-            // check if its the last box
             if (counter == 9) {
-                // reset the game
                 gameActive = false;
-                // Set play again button visible
+
                 Button play_again_btn = findViewById(R.id.play_again_btn);
                 play_again_btn.setVisibility(View.VISIBLE);
             }
 
-            // mark this position
-            gameState[tappedImage] = activePlayer;
+            gameState[tappedImage] = gameStates.valueOf(activePlayer.name());
 
-            // this will give a motion
-            // effect to the image
-            img.setTranslationY(-1000f);
-
-            // change the active player
-            // from 0 to 1 or 1 to 0
-            if (activePlayer == 0) {
-                // set the image of x
+            if (activePlayer == player.X) {
                 img.setImageResource(R.drawable.x);
-                activePlayer = 1;
+                activePlayer = player.O;
                 ImageView status_img = findViewById(R.id.status_img);
-
-                // change the status
                 status_img.setImageResource(R.drawable.oplay);
             } else {
-                // set the image of o
                 img.setImageResource(R.drawable.o);
-                activePlayer = 0;
+                activePlayer = player.X;
                 ImageView status_img = findViewById(R.id.status_img);
-
-                // change the status
                 status_img.setImageResource(R.drawable.xplay);
             }
-            img.animate().translationYBy(1000f).setDuration(300);
         }
+
         int flag = 0;
-        // Check if any player has won
         for (int[] winPosition : winPositions) {
             if (gameState[winPosition[0]] == gameState[winPosition[1]] &&
-                    gameState[winPosition[1]] == gameState[winPosition[2]] &&
-                    gameState[winPosition[0]] != 2) {
+                gameState[winPosition[1]] == gameState[winPosition[2]] &&
+                gameState[winPosition[0]] != gameStates.Empty) {
+                int winnerImgSrc, markImgSrc;
                 flag = 1;
 
-                // Somebody has won! - Find out who!
-                int winnerImgSrc;
-
-                // game reset function be called
                 gameActive = false;
-                if (gameState[winPosition[0]] == 0) {
+                if (gameState[winPosition[0]] == gameStates.X) {
                     winnerImgSrc = R.drawable.xwin;
                 } else {
                     winnerImgSrc = R.drawable.owin;
                 }
-                // Update the status bar for winner announcement
+
+                markImgSrc = determineMark(winPosition[3]);
+
                 ImageView status_img = findViewById(R.id.status_img);
                 status_img.setImageResource(winnerImgSrc);
 
-                // Set play again button visible
+                ImageView mark_img = findViewById(R.id.win_mark_img);
+                mark_img.setImageResource(markImgSrc);
+
                 Button play_again_btn = findViewById(R.id.play_again_btn);
                 play_again_btn.setVisibility(View.VISIBLE);
             }
         }
-        // set the status if the match draw
+
         if (counter == 9 && flag == 0) {
             ImageView status_img = findViewById(R.id.status_img);
             status_img.setImageResource(R.drawable.nowin);
         }
     }
 
-    // reset the game
     public void gameReset(View view) {
         gameActive = true;
-        activePlayer = 0;
-        for (int i = 0; i < gameState.length; i++) {
-            gameState[i] = 2;
-        }
-        // remove all the images from the boxes inside the grid
+        activePlayer = player.X;
+
+        Arrays.fill(gameState, gameStates.Empty);
+
         ((ImageView) findViewById(R.id.imageView0)).setImageResource(0);
         ((ImageView) findViewById(R.id.imageView1)).setImageResource(0);
         ((ImageView) findViewById(R.id.imageView2)).setImageResource(0);
@@ -138,11 +120,33 @@ public class MainActivity extends AppCompatActivity {
         ImageView status_img = findViewById(R.id.status_img);
         status_img.setImageResource(R.drawable.xplay);
 
-        // Set play again button invisible
         Button play_again_btn = findViewById(R.id.play_again_btn);
         play_again_btn.setVisibility(View.INVISIBLE);
 
         counter = 0;
+    }
+
+    private int determineMark(int winCode) {
+        switch (winCode) {
+            case 1:
+                return R.drawable.mark1;
+            case 2:
+                return R.drawable.mark2;
+            case 3:
+                return R.drawable.mark3;
+            case 4:
+                return R.drawable.mark4;
+            case 5:
+                return R.drawable.mark5;
+            case 6:
+                return R.drawable.mark6;
+            case 7:
+                return R.drawable.mark7;
+            case 8:
+                return R.drawable.mark8;
+            default:
+                return R.drawable.empty;
+        }
     }
 
     @Override
