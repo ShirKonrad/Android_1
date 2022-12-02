@@ -107,15 +107,16 @@ public class MainActivity extends AppCompatActivity {
 
         Arrays.fill(gameState, gameStates.Empty);
 
-        ((ImageView) findViewById(R.id.imageView0)).setImageResource(0);
-        ((ImageView) findViewById(R.id.imageView1)).setImageResource(0);
-        ((ImageView) findViewById(R.id.imageView2)).setImageResource(0);
-        ((ImageView) findViewById(R.id.imageView3)).setImageResource(0);
-        ((ImageView) findViewById(R.id.imageView4)).setImageResource(0);
-        ((ImageView) findViewById(R.id.imageView5)).setImageResource(0);
-        ((ImageView) findViewById(R.id.imageView6)).setImageResource(0);
-        ((ImageView) findViewById(R.id.imageView7)).setImageResource(0);
-        ((ImageView) findViewById(R.id.imageView8)).setImageResource(0);
+        ((ImageView) findViewById(R.id.imageView0)).setImageResource(R.drawable.empty);
+        ((ImageView) findViewById(R.id.imageView1)).setImageResource(R.drawable.empty);
+        ((ImageView) findViewById(R.id.imageView2)).setImageResource(R.drawable.empty);
+        ((ImageView) findViewById(R.id.imageView3)).setImageResource(R.drawable.empty);
+        ((ImageView) findViewById(R.id.imageView4)).setImageResource(R.drawable.empty);
+        ((ImageView) findViewById(R.id.imageView5)).setImageResource(R.drawable.empty);
+        ((ImageView) findViewById(R.id.imageView6)).setImageResource(R.drawable.empty);
+        ((ImageView) findViewById(R.id.imageView7)).setImageResource(R.drawable.empty);
+        ((ImageView) findViewById(R.id.imageView8)).setImageResource(R.drawable.empty);
+        ((ImageView) findViewById(R.id.win_mark_img)).setImageResource(R.drawable.empty);
 
         ImageView status_img = findViewById(R.id.status_img);
         status_img.setImageResource(R.drawable.xplay);
